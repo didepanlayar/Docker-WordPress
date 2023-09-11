@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  # NGINX Server
+  nginx:
+    container_name: ${APP_CODE_NAME}-nginx
+    image: nginx:${NGINX_VERSION}
+    ports:
+      - "${NGINX_HOST_HTTP_PORT}:80"
+      - "${NGINX_HOST_HTTPS_PORT}:443"
+    volumes:
+      - wordpress:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
+      - ${NGINX_SITES_PATH}:/etc/nginx/conf.d
+    depends_on:
+      - php-fpm
+    networks:
+      - frontend
+      - backend
+  # PHP-FPM
+  php-fpm:
+    container_name: ${APP_CODE_NAME}-php-fpm
+    image: wordpress:php7.4-fpm
+    environment:
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
+      - WORDPRESS_DB_USER=${MARIADB_USER}
+      - WORDPRESS_DB_PASSWORD=${MARIADB_PASSWORD}
+      - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX}
+    volumes:
+      - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - wordpress:${APP_CODE_PATH_CONTAINER}
+      - ${APP_CODE_PATH_HOST}/uploads:${APP_CODE_PATH_CONTAINER}/wp-content/uploads
+      - ${APP_CODE_PATH_HOST}/themes:${APP_CODE_PATH_CONTAINER}/wp-content/themes/${APP_NAME}
+      - ${APP_CODE_PATH_HOST}/plugins:${APP_CODE_PATH_CONTAINER}/wp-content/plugins/${APP_NAME}
+    networks:
+      - backend
+  # MariaDB
+  mariadb:
+    container_name: ${APP_CODE_NAME}-mariadb
+    image: mariadb:${MARIADB_VERSION}
+    ports:
+      - "${MARIADB_PORT}:3306"
+    environment:
+      - MYSQL_DATABASE=${MARIADB_DATABASE}
+      - MYSQL_USER=${MARIADB_USER}
+      - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  wordpress:

@@ -1,0 +1,7 @@
+.vscode/
+data/*
+logs/nginx/*
+src/uploads/*
+.env
+.DS_Store
+!.gitkeep
