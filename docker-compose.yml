@@ -9,6 +9,9 @@ services:
       - "${NGINX_HOST_HTTPS_PORT}:443"
     volumes:
       - core:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      - ${APP_CODE_PATH_HOST}/uploads:${APP_CODE_PATH_CONTAINER}/wp-content/uploads${APP_CODE_CONTAINER_FLAG}
+      - ${APP_CODE_PATH_HOST}/themes:${APP_CODE_PATH_CONTAINER}/wp-content/themes/${APP_NAME}${APP_CODE_CONTAINER_FLAG}
+      - ${APP_CODE_PATH_HOST}/plugins:${APP_CODE_PATH_CONTAINER}/wp-content/plugins/${APP_NAME}${APP_CODE_CONTAINER_FLAG}
       - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
       - ${NGINX_SITES_PATH}:/etc/nginx/conf.d
     depends_on:
@@ -29,9 +32,9 @@ services:
     volumes:
       - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
       - core:${APP_CODE_PATH_CONTAINER}
-      - ${APP_CODE_PATH_HOST}/uploads:${APP_CODE_PATH_CONTAINER}/wp-content/uploads
-      - ${APP_CODE_PATH_HOST}/themes:${APP_CODE_PATH_CONTAINER}/wp-content/themes/${APP_NAME}
-      - ${APP_CODE_PATH_HOST}/plugins:${APP_CODE_PATH_CONTAINER}/wp-content/plugins/${APP_NAME}
+      - ${APP_CODE_PATH_HOST}/uploads:${APP_CODE_PATH_CONTAINER}/wp-content/uploads${APP_CODE_CONTAINER_FLAG}
+      - ${APP_CODE_PATH_HOST}/themes:${APP_CODE_PATH_CONTAINER}/wp-content/themes/${APP_NAME}${APP_CODE_CONTAINER_FLAG}
+      - ${APP_CODE_PATH_HOST}/plugins:${APP_CODE_PATH_CONTAINER}/wp-content/plugins/${APP_NAME}${APP_CODE_CONTAINER_FLAG}
     networks:
       - backend
   # MariaDB
